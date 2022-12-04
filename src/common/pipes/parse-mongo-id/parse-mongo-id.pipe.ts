@@ -7,6 +7,7 @@ import {
 import { isValidObjectId } from 'mongoose';
 
 // Los Pipes transforman la data
+// nest g pi common/pipes/ParseMongoId --no-spec
 @Injectable()
 export class ParseMongoIdPipe implements PipeTransform {
   transform(value: string, metadata: ArgumentMetadata) {

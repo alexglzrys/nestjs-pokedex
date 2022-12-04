@@ -88,8 +88,14 @@ export class PokemonService {
     // Eliminar el pokemon
     // await pokemon.deleteOne();
 
-    const result = await this.pokemonModel.findByIdAndDelete(id);
-    return { result };
+    // const result = await this.pokemonModel.findByIdAndDelete(id);
+
+    // Controlar el error si el registro no es encontrado al momento de eliminar
+    const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id });
+    if (deletedCount === 0)
+      throw new NotFoundException(`Pokemon with id ${id} not found`);
+
+    return;
   }
 
   // Método utilitario para controlar los errores en base de datos
