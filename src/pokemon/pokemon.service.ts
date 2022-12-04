@@ -71,8 +71,20 @@ export class PokemonService {
     return pokemon;
   }
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
+  async update(term: string, updatePokemonDto: UpdatePokemonDto) {
+    // Localizar el pokemon
+    const pokemon = await this.findOne(term);
+
+    // En este punto hay un pokemon, por tanto procedemos a actualizar su información
+    if (updatePokemonDto.name)
+      updatePokemonDto.name = updatePokemonDto.name.toLocaleLowerCase();
+
+    // Actualizar el pokemon
+    // a pesar que le indicamos que retorne como respuesta el nuevo objeto, updateOne no lo retorna como tal (esto es por que MongoDB nativamente el método findOne no lo implementa)
+    await pokemon.updateOne(updatePokemonDto, { new: true });
+
+    // Retornar el pokemon con la data actualizada
+    return { ...pokemon.toJSON(), ...updatePokemonDto };
   }
 
   remove(id: number) {

@@ -32,14 +32,18 @@ export class PokemonController {
   }
 
   // Nuestra API busca un pokemon por su _id, name o número
-  @Get(':id')
-  findOne(@Param('id') term: string) {
+  @Get(':term')
+  findOne(@Param('term') term: string) {
     return this.pokemonService.findOne(term);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePokemonDto: UpdatePokemonDto) {
-    return this.pokemonService.update(+id, updatePokemonDto);
+  // Podemos actualizar un Pokemon buscandolo por su _id, name o número
+  @Patch(':term')
+  update(
+    @Param('term') term: string,
+    @Body() updatePokemonDto: UpdatePokemonDto,
+  ) {
+    return this.pokemonService.update(term, updatePokemonDto);
   }
 
   @Delete(':id')
