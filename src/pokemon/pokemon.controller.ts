@@ -12,6 +12,7 @@ import {
 import { PokemonService } from './pokemon.service';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id/parse-mongo-id.pipe';
 
 // La formá más sencilla de anteponer un prefijo para todo este grupo de endpoints, sería colocarlo en el decorador @Controller('perfix/group')
 // Sin embargo, cuando son muchos controladores, lo mejor es colocar ese prefijo de forma global a nivel de aplicación
@@ -46,8 +47,9 @@ export class PokemonController {
     return this.pokemonService.update(term, updatePokemonDto);
   }
 
+  // Este API solo puede eliminar un pokemon por su _id de mongo
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseMongoIdPipe) id: string) {
     return this.pokemonService.remove(id);
   }
 }

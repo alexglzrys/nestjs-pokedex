@@ -84,9 +84,12 @@ export class PokemonService {
 
   async remove(id: string) {
     // Localizar el pokemon (Como se busca por _id, name o número, estoy obligado a realizar 2 consultas)
-    const pokemon = await this.findOne(id);
+    // const pokemon = await this.findOne(id);
     // Eliminar el pokemon
-    await pokemon.deleteOne();
+    // await pokemon.deleteOne();
+
+    const result = await this.pokemonModel.findByIdAndDelete(id);
+    return { result };
   }
 
   // Método utilitario para controlar los errores en base de datos
