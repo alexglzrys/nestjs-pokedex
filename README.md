@@ -80,4 +80,17 @@ docker-compose up -d
 * MongoDB
 * Nest
 
+## Instalar librerías de NestJS para conectarse con MongoDB
+
+Nest cuenta con un conjunto de librerías para conectarse con multitud de bases de datos
+
+```
+npm i @nestjs/mongoose mogoose
+```
+
+Configurar el módulo de la librería que se comunica con la base de datos para especificar el nombre de la misma, puerto, host, user, pass, etc.
+
+```
+MongooseModule.forRoot('mongodb://localhost:27017/nest-pokemon'),
+```
 
