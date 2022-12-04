@@ -27,16 +27,7 @@ export class PokemonService {
       const pokemon = await this.pokemonModel.create(createPokemonDto);
       return pokemon;
     } catch (err) {
-      console.log(err);
-      // Un error 11000 en MongoDB significa que el registro se encuentra duplicado
-      if (err.code === 11000) {
-        throw new BadRequestException(
-          `Pokemon exist in DB ${JSON.stringify(err.keyValue)}`,
-        );
-      }
-      throw new InternalServerErrorException(
-        `Can't create Pokemon - Check server log`,
-      );
+      this.handleExceptions(err, 'create');
     }
   }
 
@@ -74,20 +65,37 @@ export class PokemonService {
   async update(term: string, updatePokemonDto: UpdatePokemonDto) {
     // Localizar el pokemon
     const pokemon = await this.findOne(term);
+    // Controlar los errores durante la actualización
+    try {
+      // En este punto hay un pokemon, por tanto procedemos a actualizar su información
+      if (updatePokemonDto.name)
+        updatePokemonDto.name = updatePokemonDto.name.toLocaleLowerCase();
 
-    // En este punto hay un pokemon, por tanto procedemos a actualizar su información
-    if (updatePokemonDto.name)
-      updatePokemonDto.name = updatePokemonDto.name.toLocaleLowerCase();
+      // Actualizar el pokemon
+      // a pesar que le indicamos que retorne como respuesta el nuevo objeto, updateOne no lo retorna como tal (esto es por que MongoDB nativamente el método findOne no lo implementa)
+      await pokemon.updateOne(updatePokemonDto, { new: true });
 
-    // Actualizar el pokemon
-    // a pesar que le indicamos que retorne como respuesta el nuevo objeto, updateOne no lo retorna como tal (esto es por que MongoDB nativamente el método findOne no lo implementa)
-    await pokemon.updateOne(updatePokemonDto, { new: true });
-
-    // Retornar el pokemon con la data actualizada
-    return { ...pokemon.toJSON(), ...updatePokemonDto };
+      // Retornar el pokemon con la data actualizada
+      return { ...pokemon.toJSON(), ...updatePokemonDto };
+    } catch (err) {
+      this.handleExceptions(err, 'update');
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} pokemon`;
+  }
+
+  // Método utilitario para controlar los errores en base de datos
+  private handleExceptions(err: any, type: string) {
+    console.log(err);
+    if (err.code === 11000) {
+      throw new BadRequestException(
+        `Pokemon exist in DB "${JSON.stringify(err.keyValue)}"`,
+      );
+    }
+    throw new InternalServerErrorException(
+      `Can't not ${type} Pokemon - Check server logs`,
+    );
   }
 }
